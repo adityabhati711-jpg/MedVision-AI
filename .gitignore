@@ -1,0 +1,35 @@
+
+# Python virtual environment
+.venv/
+venv/
+__pycache__/
+*.pyc
+
+# Python and Jupyter cache
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Environment variables and secrets
+.env
+.env.*
+.streamlit/secrets.toml
+
+# Training datasets
+data/
+*.dcm
+*.zip
+*.7z
+*.parquet
+
+# Research checkpoints
+checkpoints/
+
+# Model weights
+*.pt
+*.pth
+
+# Keep the production DenseNet121 V2 model
+!Models/densenet121_v2_original_backup.pth
+
+# Temporary files
+*.log
