@@ -159,9 +159,37 @@ html, body, .stApp,
     color: #252525 !important;
 }
 
-/* Match native app accents to the white/wine design. */
+/* Ensure native Streamlit alerts stay readable even if the viewer selects
+   Streamlit dark mode. The surrounding MedVision white/wine design stays the same. */
 [data-testid="stAppViewContainer"] [data-testid="stAlert"] {
-    border-radius: 10px;
+    background: #F9F3F6 !important;
+    border: 1px solid #E4D1DA !important;
+    border-radius: 10px !important;
+    color: #252025 !important;
+}
+
+/* Streamlit renders alert content in a nested BaseWeb notification surface.
+   Style both layers so the dark theme cannot leave a dark inner box. */
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] [data-baseweb="notification"],
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] [role="alert"] {
+    background: #F9F3F6 !important;
+    color: #252025 !important;
+    border-radius: 10px !important;
+}
+
+/* Cover Markdown text, headings and any nested elements inside info,
+   warning, error and success notifications. */
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] [data-testid="stMarkdownContainer"],
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] [data-testid="stMarkdownContainer"] *,
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] p,
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] span,
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] strong {
+    color: #252025 !important;
+}
+
+[data-testid="stAppViewContainer"] [data-testid="stAlert"] svg {
+    color: #772443 !important;
+    fill: currentColor;
 }
 
 /* Buttons */
