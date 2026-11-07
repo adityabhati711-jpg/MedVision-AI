@@ -60,7 +60,8 @@ Recorded results for **DenseNet121 V2** on **4,003 held-out X-rays**:
 
 The lower Lung Opacity recall is a meaningful limitation: some opacity-labeled images were assigned to other classes. These metrics are from the held-out test evaluation, **not** from website uploads.
 
-![DenseNet121 V2 held-out test confusion matrix](assets/readme/figure-03-confusion-matrix.png)
+<img width="954" height="716" alt="image" src="https://github.com/user-attachments/assets/8497495d-a78d-4b49-9e76-b33e642591f0" />
+
 
 *Figure 3: DenseNet121 V2 confusion matrix on 4,003 held-out X-ray images.*
 
@@ -68,7 +69,8 @@ The lower Lung Opacity recall is a meaningful limitation: some opacity-labeled i
 
 The live app computes **Grad-CAM** using DenseNet121's final feature stage (model.features.norm5) for the predicted class. Its heatmap highlights regions contributing to the model output. Users can adjust overlay intensity. **These regions are attribution, not clinically verified lesions.**
 
-![Original chest X-ray and Grad-CAM attribution](assets/readme/figure-04-gradcam-comparison.png)
+<img width="1047" height="589" alt="image" src="https://github.com/user-attachments/assets/51dea0bd-eb16-4c85-9b08-f3ebb1c693b2" />
+
 
 *Figure 4: Original chest X-ray and corresponding DenseNet121 V2 Grad-CAM attribution heatmap.*
 
@@ -91,7 +93,8 @@ A **separate historical ResNet18 model** was examined on **100 Lung Opacity-labe
 
 **Note:** The current deployed version does not reliably screen out non-X-ray uploads. Model scores must not be read as disease probabilities.
 
-![MedVision AI uploaded image and predicted classification](assets/readme/figure-06-ai-scanner.png)
+<img width="1047" height="559" alt="image" src="https://github.com/user-attachments/assets/269c540f-78bc-483c-8f6f-9f007fe26340" />
+
 
 *Figure 6: MedVision AI Scanner displaying an uploaded chest X-ray, predicted class, and uncalibrated model scores.*
 
