@@ -1,5 +1,6 @@
 
 from pathlib import Path
+from html import escape
 
 import numpy as np
 import streamlit as st
@@ -159,37 +160,61 @@ html, body, .stApp,
     color: #252525 !important;
 }
 
-/* Ensure native Streamlit alerts stay readable even if the viewer selects
-   Streamlit dark mode. The surrounding MedVision white/wine design stays the same. */
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] {
-    background: #F9F3F6 !important;
+/* Custom notices are used instead of native st.info / st.warning / st.error.
+   This avoids Streamlit dark-mode notification backgrounds overriding text contrast. */
+.medvision-notice {
+    display: flex !important;
+    align-items: flex-start !important;
+    gap: 12px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    padding: 16px 18px !important;
+    margin: 12px 0 20px !important;
+    background-color: #F9F3F6 !important;
     border: 1px solid #E4D1DA !important;
+    border-left: 4px solid #772443 !important;
     border-radius: 10px !important;
     color: #252025 !important;
+    font-size: 0.95rem !important;
+    line-height: 1.55 !important;
 }
 
-/* Streamlit renders alert content in a nested BaseWeb notification surface.
-   Style both layers so the dark theme cannot leave a dark inner box. */
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] [data-baseweb="notification"],
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] [role="alert"] {
-    background: #F9F3F6 !important;
-    color: #252025 !important;
-    border-radius: 10px !important;
-}
-
-/* Cover Markdown text, headings and any nested elements inside info,
-   warning, error and success notifications. */
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] [data-testid="stMarkdownContainer"],
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] [data-testid="stMarkdownContainer"] *,
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] p,
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] span,
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] strong {
+.medvision-notice,
+.medvision-notice * {
     color: #252025 !important;
 }
 
-[data-testid="stAppViewContainer"] [data-testid="stAlert"] svg {
+.medvision-notice .medvision-notice-icon {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    flex: 0 0 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    margin-top: 1px !important;
+    border: 1.5px solid #772443 !important;
+    border-radius: 50% !important;
     color: #772443 !important;
-    fill: currentColor;
+    font-size: 12px !important;
+    font-weight: 800 !important;
+    line-height: 1 !important;
+}
+
+.medvision-notice .medvision-notice-text {
+    flex: 1 1 auto !important;
+    color: #252025 !important;
+    overflow-wrap: anywhere;
+}
+
+.medvision-notice--error {
+    background-color: #FFF5F5 !important;
+    border-color: #E8BFC5 !important;
+    border-left-color: #A52D49 !important;
+}
+
+.medvision-notice--error .medvision-notice-icon {
+    border-color: #A52D49 !important;
+    color: #A52D49 !important;
 }
 
 /* Buttons */
@@ -219,6 +244,28 @@ div.stButton > button:hover,
 }
 </style>
 """, unsafe_allow_html=True)
+
+# -------------------- THEME-SAFE STATUS MESSAGES --------------------
+
+def notice(kind, message):
+    """Render readable status messages in both Streamlit light and dark modes.
+
+    Use escaped text and an app-owned element instead of native notification
+    surfaces, whose dark-theme background may clash with the fixed white UI.
+    """
+    kind = kind if kind in {"info", "warning", "error"} else "info"
+    symbol = "i" if kind == "info" else "!"
+    role = "status" if kind == "info" else "alert"
+    safe_message = escape(str(message))
+
+    st.markdown(
+        f'<div class="medvision-notice medvision-notice--{kind}" role="{role}">'
+        f'<span class="medvision-notice-icon" aria-hidden="true">{symbol}</span>'
+        f'<span class="medvision-notice-text">{safe_message}</span>'
+        '</div>',
+        unsafe_allow_html=True,
+    )
+
 
 # -------------------- MODEL --------------------
 
@@ -478,7 +525,7 @@ st.markdown("""
 </div>
 """, unsafe_allow_html=True)
 
-st.warning(
+notice("warning",
     "Research and educational demonstration only. "
     "Not validated for medical diagnosis or clinical decisions."
 )
@@ -572,7 +619,7 @@ if page == "AI Scanner":
 
                 if result is not None:
                     st.markdown("#### Predicted class")
-                    st.info(result["names"][result["predicted_index"]])
+                    notice("info", result["names"][result["predicted_index"]])
                     st.plotly_chart(
                         score_chart(result["names"], result["scores"]),
                         width="stretch",
@@ -641,7 +688,7 @@ if page == "AI Scanner":
                         width="stretch",
                     )
 
-                st.info(
+                notice("info",
                     "Red and yellow areas indicate higher "
                     "relative model attribution. "
                     "They do not confirm disease or "
@@ -650,13 +697,13 @@ if page == "AI Scanner":
 
         except Exception as error:
 
-            st.error(
+            notice("error",
                 f"Analysis failed: {error}"
             )
 
     else:
 
-        st.info(
+        notice("info",
             "Upload a chest X-ray to begin analysis."
         )
 
@@ -824,7 +871,7 @@ elif page == "Model Analytics":
         "100-image validation sample, not website uploads."
     )
 
-    st.info(
+    notice("info",
         "These historical Grad-CAM statistics were measured on ResNet18, not DenseNet121 V2. "
         "Research limitation: Grad-CAM is a coarse model-attribution "
         "method, not a lesion detector. Randomly positioned boxes are "
@@ -922,7 +969,7 @@ elif page == "Future Improvements":
         "Research roadmap | Implemented features and remaining improvements"
     )
 
-    st.info(
+    notice("info",
         "Current release: DenseNet121 V2 three-class chest X-ray classifier. "
         "Held-out test accuracy: 73.15% on 4,003 images; macro F1: 0.7189."
     )
@@ -971,7 +1018,7 @@ elif page == "Future Improvements":
     st.write("**Independent performance validation:** V2 held-out test completed; external validation planned")
     st.write("**Chest X-ray input validation layer:** Planned; not available in the current app")
 
-    st.warning(
+    notice("warning",
         "MedVision AI is an educational research project, not a clinically "
         "validated diagnostic system. These future improvements would "
         "not make it suitable for clinical decisions without further validation."
